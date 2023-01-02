@@ -1,0 +1,11 @@
+<package>
+  <name>object_detected</name>
+  <version>0.1.0</version>
+  <description>
+  Duckietown ROS Node that will publish/print to console which object is detected in the current frame
+  </description>
+  <maintainer email="ranais@iastate.edu">Ranai Srivastav</maintainer>
+  <license>None</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+</package>

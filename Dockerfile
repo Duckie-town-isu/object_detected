@@ -3,7 +3,7 @@ ARG REPO_NAME="object_detected"
 ARG DESCRIPTION="Duckietown ROS Node that will publish/print to console which object is detected in the current frame"
 ARG MAINTAINER="Ranai Srivastav (ranais@iastate.edu)"
 # pick an icon from: https://fontawesome.com/v4.7.0/icons/
-ARG ICON="Example of space-shuttle fa-space-shuttle"
+ARG ICON="fa-space-shuttle"
 
 # ==================================================>
 # ==> Do not change the code below this line

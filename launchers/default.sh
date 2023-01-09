@@ -13,9 +13,7 @@ dt-launchfile-init
 # NOTE: Use `dt-exec COMMAND` to run the main process (blocking process)
 
 # launching app
-roscore &
-sleep 5
-dt-exec rosrun object_detected object_detected_pub_sub.py
+roslaunch object_detected mode.launch
 
 
 # ----------------------------------------------------------------------------

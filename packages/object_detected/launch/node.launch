@@ -1,0 +1,5 @@
+<launch>
+
+  <node pkg="object_detected" type="object_detected_pub_sub.py" name="object_detected_pub_sub" output="screen"/>
+
+</launch>

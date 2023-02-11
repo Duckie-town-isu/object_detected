@@ -12,6 +12,10 @@ from sensor_msgs.msg import CompressedImage
 
 import torch
 
+import sys
+import os
+from pathlib import Path
+
 from duckietown.dtros import DTROS, NodeType
 # from duckietown.dtros import DTROS, NodeType
 
@@ -31,26 +35,29 @@ class ObjectDetector(DTROS):
         self.node_type=NodeType.PERCEPTION
         self.veh_name = rospy.get_namespace().strip("/")
         self.message = "Hello World!"
-        # self.trained_model = torch.load("trained_5m/weights/best.pt")
-        self.trained_model = torch.hub.load('.', 'custom', path='/path/to/yolov5/runs/train/exp5/weights/best.pt', source='local') 
-        self.trained_model.eval()
+
+
+        self.trained_model = torch.hub.load('./', 'custom', path='./weights/best.pt', source='local', force_reload=True)
+        self.trained_model.conf = 0.621
         
         self.img = None
         
         # get image from ROS
         self.img_subscriber = rospy.Subscriber(self.veh_name + "/hostname/camera_node/image/compressed", CompressedImage, self.callback)
         
-    """
-    Important websites
-    https://learning.oreilly.com/library/view/ros-robotics-projects/9781783554713/ch07s05.html#ch07lvl2sec57
-    https://github.com/OTL/rostensorflow
-    https://subscription.packtpub.com/book/hardware-&-creative/9781783554713/7/ch07lvl1sec57/image-recognition-using-ros-and-tensorflow
-    Make a publisher that publishes the class of the first object detected
-    
-    model = torch.hub.load('.', 'custom', path='/path/to/yolov5/runs/train/exp5/weights/best.pt', source='local') 
-    """
+        
     def do_obj_detection(self, cv_image):
-        results = self.trained_model(cv_image)
+        for pred in pred_list:
+            x_topleft = (int(pred[0]), int(pred[1]))
+            x_botright = (int(pred[2]), int(pred[3]))
+            conf = pred[4]
+            classes = results.names
+            obj_class = classes[int(pred[5])]
+
+            im_ann = cv2.rectangle(im, x_topleft, x_botright, color=(255, 0, 0), thickness=4)
+            im_ann = cv2.putText(im_ann, f"{obj_class}: {conf}", x_topleft, color=(255, 0, 0), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1)
+            
+        return (f'{obj_class} {x_topleft} {x_botright} {conf}')
         
         
     
@@ -72,7 +79,7 @@ class ObjectDetector(DTROS):
             self.message = "IMWRITE FAILED"
             raise Exception("imwrite failed")
         
-        do_obj_detection(self, cv_image)
+        self.do_obj_detection(self, cv_image)
 
 if __name__ == '__main__':
     # create the node

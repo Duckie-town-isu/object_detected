@@ -1,0 +1,7 @@
+train: /home/ranai/Ranai/Research/object-detection-ex-template/Training/images/train 
+val:  /home/ranai/Ranai/Research/object-detection-ex-template/Training/images/val
+test: /home/ranai/Ranai/Research/object-detection-ex-template/Training/images/test
+
+nc: 4
+
+name: ["cone", "duckie", "duckiebot"]

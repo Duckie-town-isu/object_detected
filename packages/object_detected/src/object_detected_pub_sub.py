@@ -50,7 +50,8 @@ class ObjectDetector(DTROS):
         
     def do_obj_detection(self, cv_image):
         
-        pred_list = self.trained_model()
+        results = self.trained_model(cv_image)
+        pred_list = results.xyxy[0].cpu().numpy() 
         
         for pred in pred_list:
             x_topleft = (int(pred[0]), int(pred[1]))

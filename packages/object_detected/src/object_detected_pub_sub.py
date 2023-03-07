@@ -28,8 +28,8 @@ class ObjectDetector(DTROS):
         # initialize the DTROS parent class
         super(ObjectDetector, self).__init__(node_name=node_name, node_type=NodeType.PERCEPTION)
         # construct publisher
-        self.pub = rospy.Publisher('IsAlive', String, queue_size=10)
-        self.pub = rospy.Publisher('object_detected', String, queue_size=10)
+        self.ann_img_pub = rospy.Publisher('IsAlive', CompressedImage, queue_size=10)
+        self.bounding_box_pub = rospy.Publisher('object_detected', String, queue_size=10)
         self.coord_pub = rospy.Publisher('')
         self.node_name=node_name
         self.node_type=NodeType.PERCEPTION
@@ -45,8 +45,13 @@ class ObjectDetector(DTROS):
         # get image from ROS
         self.img_subscriber = rospy.Subscriber(self.veh_name + "/hostname/camera_node/image/compressed", CompressedImage, self.callback)
         
+        self.bridge = CvBridge()
+        
         
     def do_obj_detection(self, cv_image):
+        
+        pred_list = self.trained_model()
+        
         for pred in pred_list:
             x_topleft = (int(pred[0]), int(pred[1]))
             x_botright = (int(pred[2]), int(pred[3]))
@@ -57,6 +62,9 @@ class ObjectDetector(DTROS):
             im_ann = cv2.rectangle(im, x_topleft, x_botright, color=(255, 0, 0), thickness=4)
             im_ann = cv2.putText(im_ann, f"{obj_class}: {conf}", x_topleft, color=(255, 0, 0), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1)
             
+            msg = self.bridge.cv2_to_compressed_imgmsg(im_ann)
+            msg.header.stamp = rospy.get_rostime()
+            self.ann_img_pub.publish(msg)
         return (f'{obj_class} {x_topleft} {x_botright} {conf}')
         
         
